@@ -27,9 +27,24 @@ test-gok:
 
 ##################################################################
 
-docker-test:
-	docker build --tag eotk-image opt.d
-	docker run -it --cap-drop=all --name eotk-container eotk-image
+docker-build:
+	docker build --tag eotk-image .
+
+docker-run:
+	docker run -it -v ~/.local/share/mkcert/rootCA.pem:/home/user/.local/share/mkcert/rootCA.pem --name eotk-container --cap-drop=all eotk-image
+
+docker-debug:
+	docker run -it --name eotk-container --cap-drop=all \
+		-v `pwd`/lib.d:/opt/eotk/lib.d \
+		-v `pwd`/templates.d:/opt/eotk/templates.d \
+		-v `pwd`/reddit.tconf:/opt/eotk/reddit.tconf \
+		--cap-drop=all \
+		eotk-image || true
+	make docker-kill
+
+docker-kill:
+	docker kill eotk-container || true
+	docker rm eotk-container || true
 
 docker-status:
 	docker images -a

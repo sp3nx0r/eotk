@@ -14,7 +14,8 @@ SetupForBuild() {
     test -f "$tool_tarball" || curl -o "$tool_tarball" "$tool_url" || exit 1
     test -f "$tool_sig" || curl -o "$tool_sig" "$tool_sig_url" || exit 1
     gpg --keyserver "hkp://$keyserver:80" --recv-keys $tool_signing_keys || exit 1
-    gpg --verify "$tool_sig" || exit 1
+    # disabling verification until Tor signing key updated
+    # gpg --verify "$tool_sig" || exit 1
     test -d "$tool_dir" || tar zxf "$tool_tarball" || exit 1
     cd $tool_dir || exit 1
 }
@@ -31,7 +32,7 @@ BuildAndCleanup() {
 
 SetupOpenRestyVars() {
     tool="openresty"
-    tool_version="1.15.8.3"
+    tool_version="$OPENRESTY_VERSION"
     tool_signing_keys="25451EB088460026195BD62CB550E09EA0E98066" # this is the full A0E98066 signature
     tool_url="https://openresty.org/download/$tool-$tool_version.tar.gz"
     tool_sig_url="https://openresty.org/download/$tool-$tool_version.tar.gz.asc"
@@ -60,8 +61,8 @@ ConfigureOpenResty() { # this accepts arguments
 
 SetupTorVars() {
     tool="tor"
-    tool_version="0.4.5.8"
-    tool_signing_keys="6AFEE6D49E92B601 C218525819F78451"
+    tool_version="$TOR_VERSION"
+    tool_signing_keys="6AFEE6D49E92B601 C218525819F78451" # this signing key is invalid now
     tool_url="https://dist.torproject.org/$tool-$tool_version.tar.gz"
     tool_sig_url="https://dist.torproject.org/$tool-$tool_version.tar.gz.asc"
     tool_link_paths="bin/$tool"
